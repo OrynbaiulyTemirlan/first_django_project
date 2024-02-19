@@ -1,19 +1,9 @@
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-</head>
-<body>
-<ul>
-    <li><a href="{% url 'home' %}">Главная страница</a></li>
-    {% for m in menu %}
-    {% if not forloop.last %}<li>{% else %}<li class="last">{% endif %}
-        <a href="{% url m.url_name %}">{{ m.title }}</a>
-    </li>
-    {% endfor %}
-</ul>
+{% block content %}
 <h1>{{ title }}</h1>
+
+{% include 'women/includes/nav.html' %}
 
 <ul>
     {% for p in posts %}
@@ -21,7 +11,7 @@
     <li>
         <h2>{{ p.title }}</h2>
         <p>{{ p.content }}</p>
-        <p><a href="{% url 'post' p.id %}">Читать пост</a></p>
+        <p><a href="{ % url 'post' p.id % }">Читать пост</a></p>
         {% if not forloop.last %}
         <hr>
         {% endif %}
@@ -29,5 +19,7 @@
     {% endif %}
     {% endfor %}
 </ul>
-</body>
-</html>
+
+{% include 'women/includes/nav.html' %}
+
+{% endblock %}
