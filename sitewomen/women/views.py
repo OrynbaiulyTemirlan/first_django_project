@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
@@ -26,8 +26,10 @@ cats_db = [
     {'id': 3, 'name': 'Спортсменки'},
 ]
 
+
 def index(request):
     posts = Women.objects.filter(is_published=1)
+
     data = {
         'title': 'Главная страница',
         'menu': menu,
@@ -47,12 +49,11 @@ def show_post(request, post_slug):
     data = {
         'title': post.title,
         'menu': menu,
-        'posts': post,
+        'post': post,
         'cat_selected': 1,
     }
 
     return render(request, 'women/post.html', data)
-
 
 
 def addpage(request):
@@ -66,14 +67,16 @@ def contact(request):
 def login(request):
     return HttpResponse("Авторизация")
 
+
 def show_category(request, cat_id):
     data = {
-        'title': 'Главная страница',
+        'title': 'Отображение по рубоикам',
         'menu': menu,
         'posts': data_db,
         'cat_selected': cat_id,
     }
     return render(request, 'women/index.html', context=data)
+
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
