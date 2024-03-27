@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.template.defaultfilters import slugify
-
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 class PublishedManager(models.Manager):
     def get_queryset(self) -> models.QuerySet:
@@ -14,7 +14,11 @@ class Women(models.Model):
         PUBLISHED = 1, 'Опубликовано'
 
     title = models.CharField(max_length=255, verbose_name='Заголовок')
-    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='Slug')
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='Slug',
+                            validators= [
+                                MinLengthValidator(5, message='Минимум 5 символов'),
+                                MaxLengthValidator(100, message='Максимум 5 символов'),
+                           ])
     content = models.TextField(blank=True, verbose_name='Текст статьи')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменеия')
