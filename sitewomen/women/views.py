@@ -1,12 +1,13 @@
+from typing import Any
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
-
 from .forms import AddPostForm, UploadFileForm
 from .models import Category, TagPost, UploadFiles, Women
-
+from django.views import View
+from django.views.generic import TemplateView
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
@@ -14,6 +15,7 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Войти", 'url_name': 'login'}
 ]
 
+# class WomenHome
 def index(request):
     posts = Women.published.all().select_related('cat')
 
@@ -25,6 +27,23 @@ def index(request):
     }
     return render(request, 'women/index.html', context=data)
 
+
+class WomenHome(TemplateView):
+    template_name = 'women/index.html'
+    extra_context = {
+        'title': 'Главная страница',
+        'menu': menu,
+        'posts':Women.published.all().select_related('cat'),
+        'cat_selected': 0,
+    }
+
+    # def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+    #     context = super().get_context_data(**kwargs)
+    #     context['title'] = 'Главная страница'
+    #     context['menu'] = menu
+    #     context['posts'] = Women.published.all().select_related('cat')
+    #     context['cat_selected'] = int(self.request.GET.get('cat_id', 0))
+    #     return context
 
 # def handle_uploaded_file(f):
 #     with open(f"uploads/{f.name}", "wb+") as destination:
@@ -56,7 +75,7 @@ def show_post(request, post_slug):
 
     return render(request, 'women/post.html', data)
 
-
+# class AddPage
 def addpage(request):
     if request.method == 'POST':
         form = AddPostForm(request.POST, request.FILES)
@@ -79,6 +98,27 @@ def addpage(request):
     }
     return render(request, 'women/addpage.html', data)
 
+class AddPage(View):
+    def get(self, request):
+        form = AddPostForm()
+        data = {
+            'menu': menu,
+            'title': 'Добавление статьи',
+            'form': form
+        }
+        return render(request, 'women/addpage.html', data)
+
+    def post(self, request):
+        form = AddPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        data = {
+            'menu': menu,
+            'title': 'Добавление статьи',
+            'form': form
+        }
+        return render(request, 'women/addpage.html', data)
 
 def contact(request):
     return HttpResponse("Обратная связь")
